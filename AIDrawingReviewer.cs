@@ -46,6 +46,15 @@ namespace WindowsFormsApplication5
         "4. 使用简体中文，简洁专业。";
 
     /// <summary>
+    /// 部分模型（如 Kimi K3/K2）要求 temperature 只能为 1，其他模型用 0.3 更稳。
+    /// </summary>
+    private static double ResolveTemperature(string model)
+    {
+        string m = (model ?? "").ToLower();
+        return m.IndexOf("kimi") >= 0 ? 1.0 : 0.3;
+    }
+
+    /// <summary>
     /// 调用大模型 API 审核图纸。成功时 Report 返回报告文本；失败时 Error 给出原因。
     /// </summary>
     public static async Task<AIReviewResult> ReviewAsync(AIConfig cfg, string contextJson)
@@ -60,7 +69,7 @@ namespace WindowsFormsApplication5
             var req = new Dictionary<string, object>
             {
                 { "model", cfg.Model },
-                { "temperature", 0.3 },
+                { "temperature", ResolveTemperature(cfg.Model) },
                 { "max_tokens", cfg.MaxTokens },
                 { "messages", messages }
             };
@@ -137,7 +146,7 @@ namespace WindowsFormsApplication5
             var req = new Dictionary<string, object>
             {
                 { "model", cfg.VisionModel },
-                { "temperature", 0.3 },
+                { "temperature", ResolveTemperature(cfg.VisionModel) },
                 { "max_tokens", cfg.MaxTokens },
                 { "messages", messages }
             };
