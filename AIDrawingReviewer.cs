@@ -30,7 +30,9 @@ namespace WindowsFormsApplication5
             "1. 只依据提供的数据判断，禁止臆造数据中不存在的标注或问题；不确定的写『需人工复核』；\n" +
             "2. 输出格式：先【总体评价】（2~3 句）；再【问题清单】，每条按「严重度(错误/警告/提示) | 类别 | 位置 | 问题描述 | 修改建议」；最后【改进建议】要点；\n" +
             "3. 规则检查已发现的问题可以归纳引用，但不要逐条复述；重点补充规则检查发现不了的（如标注逻辑矛盾、可能漏标的关键尺寸、比例与图幅不匹配、标题栏信息相互矛盾等）；\n" +
-            "4. 使用简体中文，简洁专业。";
+            "4. 使用简体中文，简洁专业。\n" +
+            "5. 输出务必精炼：【总体评价】不超过3句话；【问题清单】只列确定的问题，每条严格一行（严重度|类别|位置|问题|建议），最多10条，同类合并；【改进建议】最多5条要点；全篇不超过600字；" +
+            "6. 禁止输出思考过程、英文草稿、推理过程、解释性铺垫与重复内容，直接输出报告正文。";
 
     /// <summary>
     /// 视觉通道提示词：模型同时看到「图纸截图」与「结构化数据」，做看图 + 数据联合审核。
@@ -43,7 +45,9 @@ namespace WindowsFormsApplication5
         "1. 图片用于核对可见的标注与格式问题（标注重叠/越界/字号/位置/遗漏等），数据用于核对标题栏、视图比例等结构化信息；两者一致时交叉确认，矛盾时以图片为准并注明；\n" +
         "2. 只依据图片中实际可见和 JSON 中实际存在的信息判断，禁止臆造；看不清或不确定的写『需人工复核』；\n" +
         "3. 输出格式：先【总体评价】（2~3 句）；再【问题清单】，每条按「严重度(错误/警告/提示) | 类别 | 位置 | 问题描述 | 修改建议」；最后【改进建议】要点；\n" +
-        "4. 使用简体中文，简洁专业。";
+        "4. 使用简体中文，简洁专业。\n" +
+        "5. 输出务必精炼：【总体评价】不超过3句话；【问题清单】只列确定的问题，每条严格一行（严重度|类别|位置|问题|建议），最多10条，同类合并；【改进建议】最多5条要点；全篇不超过600字；" +
+        "6. 禁止输出思考过程、英文草稿、推理过程、解释性铺垫与重复内容，直接输出报告正文。";
 
     /// <summary>
     /// 部分模型（如 Kimi K3/K2）要求 temperature 只能为 1，其他模型用 0.3 更稳。
@@ -92,7 +96,7 @@ namespace WindowsFormsApplication5
                 string content = ExtractContent(respBody);
                 if (content == null)
                 {
-                    return new AIReviewResult { Error = "大模型 API 返回结构无法解析：" + Truncate(respBody, 300) };
+                    return new AIReviewResult { Error = "模型未返回有效审核内容（返回为空或格式异常），请重试一次。原始响应：" + Truncate(respBody, 200) };
                 }
                 return new AIReviewResult { Report = content };
             }
@@ -169,7 +173,7 @@ namespace WindowsFormsApplication5
                 string content = ExtractContent(respBody);
                 if (content == null)
                 {
-                    return new AIReviewResult { Error = "视觉模型 API 返回结构无法解析：" + Truncate(respBody, 300) };
+                    return new AIReviewResult { Error = "视觉模型未返回有效审核内容（返回为空或格式异常），请重试一次。原始响应：" + Truncate(respBody, 200) };
                 }
                 return new AIReviewResult { Report = content };
             }
@@ -199,16 +203,8 @@ namespace WindowsFormsApplication5
                 if (msg == null || !msg.ContainsKey("content")) return null;
                 object contentObj = msg["content"];
                 string content = contentObj == null ? null : Convert.ToString(contentObj);
-                if (string.IsNullOrEmpty(content))
-                {
-                    // Kimi 等推理模型可能把输出配额都花在 reasoning_content（推理过程）上，
-                    // 导致 content 为空、报告空白；此处兜底使用推理内容，避免“一片空白”。
-                    object rc;
-                    if (msg.TryGetValue("reasoning_content", out rc) && rc != null)
-                    {
-                        content = Convert.ToString(rc);
-                    }
-                }
+                // 不把模型的英文推理过程（reasoning_content）当报告返回（会显示为乱码）；
+                // content 为空时返回 null，由上层提示“模型未返回有效内容，请重试”。
                 return string.IsNullOrEmpty(content) ? null : content;
             }
             catch
