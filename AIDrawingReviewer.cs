@@ -198,7 +198,18 @@ namespace WindowsFormsApplication5
                 var msg = first["message"] as Dictionary<string, object>;
                 if (msg == null || !msg.ContainsKey("content")) return null;
                 object contentObj = msg["content"];
-                return contentObj == null ? null : Convert.ToString(contentObj);
+                string content = contentObj == null ? null : Convert.ToString(contentObj);
+                if (string.IsNullOrEmpty(content))
+                {
+                    // Kimi 等推理模型可能把输出配额都花在 reasoning_content（推理过程）上，
+                    // 导致 content 为空、报告空白；此处兜底使用推理内容，避免“一片空白”。
+                    object rc;
+                    if (msg.TryGetValue("reasoning_content", out rc) && rc != null)
+                    {
+                        content = Convert.ToString(rc);
+                    }
+                }
+                return string.IsNullOrEmpty(content) ? null : content;
             }
             catch
             {
