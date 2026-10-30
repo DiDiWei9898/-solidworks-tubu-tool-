@@ -822,6 +822,8 @@ namespace WindowsFormsApplication5
             string imagePath = null;
             try
             {
+                // 审核期间给出可见进度提示，避免误以为“没反应”
+                lblAIConfigStatus.Text = "AI 审核进行中：正在提取图纸并调用大模型，通常需要 1~3 分钟，请稍候…";
                 // 1) 提取图纸结构化上下文（含规则检查结果），全部来自 SolidWorks API 只读提取
                 string context = DrawingChecker.BuildReviewContextJson(swApp, ModleDoc);
 
@@ -861,6 +863,7 @@ namespace WindowsFormsApplication5
             finally
             {
                 Cursor = Cursors.Default;
+                lblAIConfigStatus.Text = "本次 AI 审核已结束（可再次审核）。大模型报告仅供参考，最终以人工复核为准。";
             }
         }
 
@@ -884,11 +887,34 @@ namespace WindowsFormsApplication5
                 using (Bitmap bmp = NativeImageCapture.CaptureWindow(hwnd))
                 {
                     if (bmp == null) return null;
-                    bmp.Save(png, ImageFormat.Png);
+                    // 大图会显著拖慢上传与模型处理（还易超时），先缩到最长边 2000px 内再保存；
+                    // AI 看图核对该分辨率足够，避免请求体过大导致“已取消一个任务（超时）”。
+                    using (Bitmap resized = Downscale(bmp, 2000))
+                    {
+                        resized.Save(png, ImageFormat.Png);
+                    }
                 }
                 return File.Exists(png) ? png : null;
             }
             catch { return null; }
+        }
+
+        /// <summary>按最长边缩放位图；不超过目标尺寸时原样复制。</summary>
+        private static Bitmap Downscale(Bitmap src, int maxEdge)
+        {
+            int w = src.Width, h = src.Height;
+            int longEdge = Math.Max(w, h);
+            if (longEdge <= maxEdge) return new Bitmap(src);
+            double scale = (double)maxEdge / longEdge;
+            int nw = Math.Max(1, (int)(w * scale));
+            int nh = Math.Max(1, (int)(h * scale));
+            var bmp = new Bitmap(nw, nh);
+            using (var g = Graphics.FromImage(bmp))
+            {
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawImage(src, 0, 0, nw, nh);
+            }
+            return bmp;
         }
 
         private void ShowAIReviewReport(string report, string imagePath, bool visual = false)
