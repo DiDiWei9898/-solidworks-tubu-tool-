@@ -84,8 +84,8 @@ namespace WindowsFormsApplication5
                 txtVisionBaseUrl.Text = cfg.VisionBaseUrl;
                 txtVisionModel.Text = cfg.VisionModel;
                 lblAIConfigStatus.Text = cfg.HasKey
-                    ? "已从 ai_config.json 加载配置（文本通道已配置）。"
-                    : "已加载配置；请在上方填写 ApiKey（文本通道必填），视觉通道可选填视觉Key。";
+                    ? "已从 ai_config.json 加载配置（文本通道已配置）。若用的是百炼一个Key，视觉Key留空会自动复用。"
+                    : "已加载配置；请在上方填写 ApiKey（文本通道必填）。若用百炼一个 Key，视觉行 Key 留空即可自动复用。";
             }
             catch { }
         }
@@ -106,6 +106,13 @@ namespace WindowsFormsApplication5
             if (v.Length > 0) cfg.VisionBaseUrl = v;
             v = txtVisionModel.Text.Trim();
             if (v.Length > 0) cfg.VisionModel = v;
+            // 便捷规则：文本通道用的是通义千问/阿里云百炼（dashscope）时，视觉 Key 留空则自动复用文本 Key，
+            // 一个 Key 同时用于文本审核与视觉审核；其他平台（如 DeepSeek 无视觉模型）必须单独填视觉 Key。
+            if (string.IsNullOrEmpty(cfg.VisionApiKey) && cfg.HasKey
+                && cfg.BaseUrl.ToLower().IndexOf("dashscope") >= 0)
+            {
+                cfg.VisionApiKey = cfg.ApiKey;
+            }
             return cfg;
         }
 
