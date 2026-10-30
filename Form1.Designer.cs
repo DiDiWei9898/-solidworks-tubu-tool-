@@ -608,7 +608,7 @@
             this.txtVisionModel.TabIndex = 11;
             this.toolTipAI.SetToolTip(this.txtVisionModel, "视觉模型名，默认 qwen-vl-plus；可按效果换 qwen-vl-max / qwen2.5-vl-72b-instruct");
 
-            this.StyleHint(this.lblAIHelp2, "视觉通道（选填）：视觉Key=阿里云百炼密钥，填写后启用「看图+数据」联合审核；若文本通道用的就是百炼地址，视觉Key可留空，会自动复用文本Key（一个Key两用）");
+            this.StyleHint(this.lblAIHelp2, "视觉通道（选填）：视觉Key=火山方舟/百炼密钥，填写后启用「看图+数据」联合审核；若文本通道用的就是方舟/百炼地址，视觉Key可留空，会自动复用文本Key（一个Key两用）");
             this.lblAIHelp2.Location = new System.Drawing.Point(18, 100);
             this.lblAIHelp2.Name = "lblAIHelp2";
             this.lblAIHelp2.Size = new System.Drawing.Size(892, 18);
