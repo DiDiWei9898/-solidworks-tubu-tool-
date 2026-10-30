@@ -54,6 +54,9 @@
         private System.Windows.Forms.Label lblVisionApiKeyField;
         private System.Windows.Forms.Label lblVisionBaseUrlField;
         private System.Windows.Forms.Label lblVisionModelField;
+        private System.Windows.Forms.ToolTip toolTipAI;
+        private System.Windows.Forms.Label lblAIHelp1;
+        private System.Windows.Forms.Label lblAIHelp2;
         private System.Windows.Forms.Label lblDir1;
         private System.Windows.Forms.Label lblDir2;
         private System.Windows.Forms.Label lblPartName;
@@ -119,6 +122,9 @@
             this.lblVisionApiKeyField = new System.Windows.Forms.Label();
             this.lblVisionBaseUrlField = new System.Windows.Forms.Label();
             this.lblVisionModelField = new System.Windows.Forms.Label();
+            this.toolTipAI = new System.Windows.Forms.ToolTip();
+            this.lblAIHelp1 = new System.Windows.Forms.Label();
+            this.lblAIHelp2 = new System.Windows.Forms.Label();
             this.lblDir1 = new System.Windows.Forms.Label();
             this.lblDir2 = new System.Windows.Forms.Label();
             this.lblPartName = new System.Windows.Forms.Label();
@@ -507,96 +513,116 @@
             this.gbAIConfig.Controls.Add(this.txtVisionModel);
             this.gbAIConfig.Controls.Add(this.btnSaveAIConfig);
             this.gbAIConfig.Controls.Add(this.lblAIConfigStatus);
+            this.gbAIConfig.Controls.Add(this.lblAIHelp1);
+            this.gbAIConfig.Controls.Add(this.lblAIHelp2);
             this.gbAIConfig.Font = new System.Drawing.Font("微软雅黑", 9.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 134);
             this.gbAIConfig.ForeColor = System.Drawing.Color.FromArgb(43, 58, 85);
             this.gbAIConfig.Location = new System.Drawing.Point(16, 706);
             this.gbAIConfig.Name = "gbAIConfig";
-            this.gbAIConfig.Size = new System.Drawing.Size(928, 118);
+            this.gbAIConfig.Size = new System.Drawing.Size(928, 162);
             this.gbAIConfig.TabIndex = 9;
             this.gbAIConfig.TabStop = false;
             this.gbAIConfig.Text = "AI 审核配置（直接在界面填写，保存后无需再改 ai_config.json）";
 
             this.StyleFieldLabel(this.lblApiKeyField, "ApiKey");
-            this.lblApiKeyField.Location = new System.Drawing.Point(18, 28);
+            this.lblApiKeyField.Location = new System.Drawing.Point(18, 26);
             this.lblApiKeyField.Name = "lblApiKeyField";
             this.lblApiKeyField.Size = new System.Drawing.Size(55, 22);
             this.lblApiKeyField.TabIndex = 0;
 
             this.StyleTextBox(this.txtApiKey);
-            this.txtApiKey.Location = new System.Drawing.Point(80, 24);
+            this.txtApiKey.Location = new System.Drawing.Point(80, 22);
             this.txtApiKey.Name = "txtApiKey";
             this.txtApiKey.Size = new System.Drawing.Size(200, 26);
             this.txtApiKey.TabIndex = 1;
+            this.toolTipAI.SetToolTip(this.txtApiKey, "文本通道密钥（必填）。DeepSeek 在 platform.deepseek.com 获取；也支持通义/智谱/火山方舟等 OpenAI 兼容密钥。");
 
             this.StyleFieldLabel(this.lblBaseUrlField, "BaseUrl");
-            this.lblBaseUrlField.Location = new System.Drawing.Point(290, 28);
+            this.lblBaseUrlField.Location = new System.Drawing.Point(290, 26);
             this.lblBaseUrlField.Name = "lblBaseUrlField";
             this.lblBaseUrlField.Size = new System.Drawing.Size(60, 22);
             this.lblBaseUrlField.TabIndex = 2;
 
             this.StyleTextBox(this.txtBaseUrl);
-            this.txtBaseUrl.Location = new System.Drawing.Point(356, 24);
+            this.txtBaseUrl.Location = new System.Drawing.Point(356, 22);
             this.txtBaseUrl.Name = "txtBaseUrl";
             this.txtBaseUrl.Size = new System.Drawing.Size(270, 26);
             this.txtBaseUrl.TabIndex = 3;
+            this.toolTipAI.SetToolTip(this.txtBaseUrl, "接口地址，结尾不要斜杠。默认 https://api.deepseek.com；换通义填 https://dashscope.aliyuncs.com/compatible-mode/v1");
 
             this.StyleFieldLabel(this.lblModelField, "Model");
-            this.lblModelField.Location = new System.Drawing.Point(640, 28);
+            this.lblModelField.Location = new System.Drawing.Point(640, 26);
             this.lblModelField.Name = "lblModelField";
             this.lblModelField.Size = new System.Drawing.Size(45, 22);
             this.lblModelField.TabIndex = 4;
 
             this.StyleTextBox(this.txtModel);
-            this.txtModel.Location = new System.Drawing.Point(692, 24);
+            this.txtModel.Location = new System.Drawing.Point(692, 22);
             this.txtModel.Name = "txtModel";
             this.txtModel.Size = new System.Drawing.Size(218, 26);
             this.txtModel.TabIndex = 5;
+            this.toolTipAI.SetToolTip(this.txtModel, "模型名。默认 deepseek-chat；通义用 qwen-plus；智谱用 glm-4-plus");
+
+            this.StyleHint(this.lblAIHelp1, "文本通道：ApiKey=大模型密钥（必填）；BaseUrl=接口地址（结尾不带 /）；Model=模型名，如 deepseek-chat / qwen-plus / glm-4-plus");
+            this.lblAIHelp1.Location = new System.Drawing.Point(18, 52);
+            this.lblAIHelp1.Name = "lblAIHelp1";
+            this.lblAIHelp1.Size = new System.Drawing.Size(892, 18);
+            this.lblAIHelp1.TabIndex = 14;
 
             this.StyleFieldLabel(this.lblVisionApiKeyField, "视觉Key");
-            this.lblVisionApiKeyField.Location = new System.Drawing.Point(18, 62);
+            this.lblVisionApiKeyField.Location = new System.Drawing.Point(18, 74);
             this.lblVisionApiKeyField.Name = "lblVisionApiKeyField";
             this.lblVisionApiKeyField.Size = new System.Drawing.Size(55, 22);
             this.lblVisionApiKeyField.TabIndex = 6;
 
             this.StyleTextBox(this.txtVisionApiKey);
-            this.txtVisionApiKey.Location = new System.Drawing.Point(80, 58);
+            this.txtVisionApiKey.Location = new System.Drawing.Point(80, 70);
             this.txtVisionApiKey.Name = "txtVisionApiKey";
             this.txtVisionApiKey.Size = new System.Drawing.Size(200, 26);
             this.txtVisionApiKey.TabIndex = 7;
+            this.toolTipAI.SetToolTip(this.txtVisionApiKey, "视觉通道密钥（选填，填了才启用「看图+数据」联合审核）。阿里云百炼 bailian.console.aliyun.com 获取。");
 
             this.StyleFieldLabel(this.lblVisionBaseUrlField, "视觉地址");
-            this.lblVisionBaseUrlField.Location = new System.Drawing.Point(290, 62);
+            this.lblVisionBaseUrlField.Location = new System.Drawing.Point(290, 74);
             this.lblVisionBaseUrlField.Name = "lblVisionBaseUrlField";
             this.lblVisionBaseUrlField.Size = new System.Drawing.Size(75, 22);
             this.lblVisionBaseUrlField.TabIndex = 8;
 
             this.StyleTextBox(this.txtVisionBaseUrl);
-            this.txtVisionBaseUrl.Location = new System.Drawing.Point(372, 58);
+            this.txtVisionBaseUrl.Location = new System.Drawing.Point(372, 70);
             this.txtVisionBaseUrl.Name = "txtVisionBaseUrl";
             this.txtVisionBaseUrl.Size = new System.Drawing.Size(270, 26);
             this.txtVisionBaseUrl.TabIndex = 9;
+            this.toolTipAI.SetToolTip(this.txtVisionBaseUrl, "视觉接口地址，默认 https://dashscope.aliyuncs.com/compatible-mode/v1（通义千问 VL），一般不用改。");
 
             this.StyleFieldLabel(this.lblVisionModelField, "视觉模型");
-            this.lblVisionModelField.Location = new System.Drawing.Point(652, 62);
+            this.lblVisionModelField.Location = new System.Drawing.Point(652, 74);
             this.lblVisionModelField.Name = "lblVisionModelField";
             this.lblVisionModelField.Size = new System.Drawing.Size(55, 22);
             this.lblVisionModelField.TabIndex = 10;
 
             this.StyleTextBox(this.txtVisionModel);
-            this.txtVisionModel.Location = new System.Drawing.Point(714, 58);
+            this.txtVisionModel.Location = new System.Drawing.Point(714, 70);
             this.txtVisionModel.Name = "txtVisionModel";
             this.txtVisionModel.Size = new System.Drawing.Size(196, 26);
             this.txtVisionModel.TabIndex = 11;
+            this.toolTipAI.SetToolTip(this.txtVisionModel, "视觉模型名，默认 qwen-vl-plus；可按效果换 qwen-vl-max / qwen2.5-vl-72b-instruct");
+
+            this.StyleHint(this.lblAIHelp2, "视觉通道（选填）：视觉Key=阿里云百炼密钥，填写后启用「看图+数据」联合审核；视觉地址/视觉模型默认即可，按效果可换 qwen-vl-max 等");
+            this.lblAIHelp2.Location = new System.Drawing.Point(18, 100);
+            this.lblAIHelp2.Name = "lblAIHelp2";
+            this.lblAIHelp2.Size = new System.Drawing.Size(892, 18);
+            this.lblAIHelp2.TabIndex = 15;
 
             this.StyleButton(this.btnSaveAIConfig, "保存 AI 配置");
-            this.btnSaveAIConfig.Location = new System.Drawing.Point(18, 84);
+            this.btnSaveAIConfig.Location = new System.Drawing.Point(18, 126);
             this.btnSaveAIConfig.Name = "btnSaveAIConfig";
             this.btnSaveAIConfig.Size = new System.Drawing.Size(150, 28);
             this.btnSaveAIConfig.TabIndex = 12;
             this.btnSaveAIConfig.Click += new System.EventHandler(btnSaveAIConfig_Click);
 
             this.StyleHint(this.lblAIConfigStatus, "打开程序时自动加载 ai_config.json；填写后点「保存 AI 配置」即可生效。");
-            this.lblAIConfigStatus.Location = new System.Drawing.Point(180, 90);
+            this.lblAIConfigStatus.Location = new System.Drawing.Point(180, 132);
             this.lblAIConfigStatus.Name = "lblAIConfigStatus";
             this.lblAIConfigStatus.Size = new System.Drawing.Size(730, 20);
             this.lblAIConfigStatus.TabIndex = 13;
@@ -608,7 +634,7 @@
             this.gbCheck.Controls.Add(this.lblHintCheck);
             this.gbCheck.Font = new System.Drawing.Font("微软雅黑", 9.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 134);
             this.gbCheck.ForeColor = System.Drawing.Color.FromArgb(43, 58, 85);
-            this.gbCheck.Location = new System.Drawing.Point(16, 838);
+            this.gbCheck.Location = new System.Drawing.Point(16, 880);
             this.gbCheck.Name = "gbCheck";
             this.gbCheck.Size = new System.Drawing.Size(928, 92);
             this.gbCheck.TabIndex = 8;
@@ -639,7 +665,7 @@
             base.AutoScaleDimensions = new System.Drawing.SizeF(7f, 13f);
             base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(239, 242, 247);
-            base.ClientSize = new System.Drawing.Size(960, 946);
+            base.ClientSize = new System.Drawing.Size(960, 992);
             base.Controls.Add(this.gbCheck);
             base.Controls.Add(this.gbAIConfig);
             base.Controls.Add(this.gbOther);
