@@ -18,7 +18,9 @@
   - 标题栏标准：机加图 / 装配图分开判定（图号、名称、材料、物料编码、设计、设计日期等）
 - **AI 智能审核**：把当前工程图的结构化信息（图幅、视图、标注、标题栏属性、规则检查结果）发送给大模型 API 做全面审核
   - 默认接入 DeepSeek（OpenAI 兼容接口），可在 `ai_config.json` 中切换到任意 OpenAI 兼容端点
-  - 同时把工程图图形区导出为 PNG（`AI_Review` 目录），为后续 YOLO / 视觉模型审核预留接入点
+  - 同时把工程图图形区导出为 PNG（`AI_Review` 目录）
+  - **视觉通道（可选）**：在 `ai_config.json` 配置 `VisionApiKey` 后，审核时把图纸 PNG 连同结构化数据一起发送给视觉大模型（默认通义千问 VL，`qwen-vl-plus`），实现「看图 + 数据」联合审核，可直接发现标注重叠、越界、字号异常等图片层面问题
+  - 未配置视觉通道时自动回退为纯结构化数据审核（老行为，兼容旧配置）
 
 ## 环境要求
 
@@ -71,12 +73,16 @@ MSBuild.exe "涂布二次开发工具.csproj" /t:Build /p:Configuration=Debug /p
   "ApiKey": "你的 API Key",
   "Model": "deepseek-chat",
   "TimeoutSeconds": 120,
-  "MaxTokens": 4000
+  "MaxTokens": 4000,
+  "VisionBaseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "VisionApiKey": "",
+  "VisionModel": "qwen-vl-plus"
 }
 ```
 
 - 默认 DeepSeek（平台：https://platform.deepseek.com）
 - 可切换到任意 OpenAI 兼容端点（通义、智谱、火山方舟等），只需改 `BaseUrl` 与 `Model`
+- **视觉通道（可选）**：填 `VisionApiKey`（阿里云百炼获取，https://bailian.console.aliyun.com）即启用「看图 + 数据」联合审核；`VisionModel` 可按效果调整（如 `qwen-vl-max`、`qwen2.5-vl-72b-instruct`）。图片层问题（重叠/越界/字号）以图片为准，极小字等看不清处模型会标注「需人工复核」
 
 ## 路线图
 

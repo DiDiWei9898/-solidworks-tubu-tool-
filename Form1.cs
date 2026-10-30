@@ -700,17 +700,34 @@ namespace WindowsFormsApplication5
                 // 1) 提取图纸结构化上下文（含规则检查结果），全部来自 SolidWorks API 只读提取
                 string context = DrawingChecker.BuildReviewContextJson(swApp, ModleDoc);
 
-                // 2) 导出当前图纸图片（失败不阻塞审核；供后续 YOLO / 视觉模型与报告展示使用）
+                // 2) 导出当前图纸图片（失败不阻塞审核；供视觉通道与报告展示使用）
                 imagePath = TryExportSheetImage();
 
-                // 3) 调用大模型 API 全面审核
-                AIReviewResult result = await AIDrawingReviewer.ReviewAsync(cfg, context);
+                // 3) 调用大模型 API 全面审核：
+                //    已配置视觉通道（VisionApiKey）且图片导出成功 → 图文联合审核（看图 + 数据）；
+                //    否则回退为纯结构化数据文本审核（兼容旧配置）。
+                AIReviewResult result;
+                bool useVision = cfg.HasVisionKey && !string.IsNullOrEmpty(imagePath);
+                if (useVision)
+                {
+                    result = await AIDrawingReviewer.ReviewWithVisionAsync(cfg, context, imagePath);
+                }
+                else
+                {
+                    if (cfg.HasVisionKey && string.IsNullOrEmpty(imagePath))
+                    {
+                        MessageBox.Show(
+                            "已配置视觉通道，但当前图纸图片导出失败（视图窗口不可见或导出异常）。\n本次将仅使用结构化数据进行审核。",
+                            "AI 图纸审核", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    result = await AIDrawingReviewer.ReviewAsync(cfg, context);
+                }
                 if (result.Report == null)
                 {
                     MessageBox.Show(result.Error ?? "审核失败：未返回报告。", "AI 图纸审核", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                ShowAIReviewReport(result.Report, imagePath);
+                ShowAIReviewReport(result.Report, imagePath, useVision);
             }
             catch (Exception ex)
             {
@@ -749,10 +766,10 @@ namespace WindowsFormsApplication5
             catch { return null; }
         }
 
-        private void ShowAIReviewReport(string report, string imagePath)
+        private void ShowAIReviewReport(string report, string imagePath, bool visual = false)
         {
             Form resultForm = new Form();
-            resultForm.Text = "AI 图纸审核报告";
+            resultForm.Text = visual ? "AI 图纸审核报告（视觉 + 结构化联合审核）" : "AI 图纸审核报告";
             resultForm.StartPosition = FormStartPosition.CenterParent;
             resultForm.FormBorderStyle = FormBorderStyle.Sizable;
             resultForm.MinimizeBox = false;
@@ -764,7 +781,8 @@ namespace WindowsFormsApplication5
             summary.Dock = DockStyle.Top;
             summary.Height = 30;
             summary.Padding = new Padding(12, 8, 12, 0);
-            summary.Text = "以下为 AI 依据图纸结构化数据生成的审核意见（仅供参考，最终以人工复核为准）。"
+            summary.Text = (visual ? "本次审核同时使用了图纸图片（视觉通道）与结构化数据，意见仅供参考，最终以人工复核为准。"
+                                   : "以下为 AI 依据图纸结构化数据生成的审核意见（仅供参考，最终以人工复核为准）。")
                          + (string.IsNullOrEmpty(imagePath) ? "" : System.Environment.NewLine + "已导出图纸图片：" + imagePath);
             resultForm.Controls.Add(summary);
 

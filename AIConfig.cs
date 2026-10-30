@@ -9,6 +9,8 @@ namespace WindowsFormsApplication5
     /// <summary>
     /// AI 审核配置。从 exe 同目录的 ai_config.json 读取；缺省按 DeepSeek（OpenAI 兼容接口）配置，
     /// 可改 BaseUrl / Model 切换到通义、智谱、火山方舟等任意 OpenAI 兼容端点。
+    /// 视觉通道（可选）：配置 VisionBaseUrl / VisionApiKey / VisionModel 后，审核时会把图纸图片
+    /// 连同结构化数据一起发送，实现「看图 + 数据」联合审核。缺省指向通义千问 VL（OpenAI 兼容模式）。
     /// </summary>
     public class AIConfig
     {
@@ -17,6 +19,11 @@ namespace WindowsFormsApplication5
         public string Model = "deepseek-chat";
         public int TimeoutSeconds = 120;
         public int MaxTokens = 4000;
+
+        // ===== 视觉通道（可选）=====
+        public string VisionBaseUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1";
+        public string VisionApiKey = "";
+        public string VisionModel = "qwen-vl-plus";
 
         public static AIConfig Load()
         {
@@ -36,6 +43,9 @@ namespace WindowsFormsApplication5
                 cfg.Model = GetStr(dict, "Model", cfg.Model);
                 cfg.TimeoutSeconds = GetInt(dict, "TimeoutSeconds", cfg.TimeoutSeconds);
                 cfg.MaxTokens = GetInt(dict, "MaxTokens", cfg.MaxTokens);
+                cfg.VisionBaseUrl = GetStr(dict, "VisionBaseUrl", cfg.VisionBaseUrl);
+                cfg.VisionApiKey = GetStr(dict, "VisionApiKey", cfg.VisionApiKey);
+                cfg.VisionModel = GetStr(dict, "VisionModel", cfg.VisionModel);
             }
             catch { }
             return cfg;
@@ -43,6 +53,9 @@ namespace WindowsFormsApplication5
 
         /// <summary>配置文件是否已填写 API Key。</summary>
         public bool HasKey { get { return !string.IsNullOrWhiteSpace(ApiKey); } }
+
+        /// <summary>视觉通道是否已配置（填写了视觉 API Key）。</summary>
+        public bool HasVisionKey { get { return !string.IsNullOrWhiteSpace(VisionApiKey); } }
 
         private static string GetStr(Dictionary<string, object> dict, string key, string def)
         {
@@ -73,7 +86,10 @@ namespace WindowsFormsApplication5
                 + "  \"ApiKey\": \"\",\n"
                 + "  \"Model\": \"deepseek-chat\",\n"
                 + "  \"TimeoutSeconds\": 120,\n"
-                + "  \"MaxTokens\": 4000\n"
+                + "  \"MaxTokens\": 4000,\n"
+                + "  \"VisionBaseUrl\": \"https://dashscope.aliyuncs.com/compatible-mode/v1\",\n"
+                + "  \"VisionApiKey\": \"\",\n"
+                + "  \"VisionModel\": \"qwen-vl-plus\"\n"
                 + "}";
         }
     }
