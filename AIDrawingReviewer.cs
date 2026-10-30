@@ -179,10 +179,12 @@ namespace WindowsFormsApplication5
                 if (parsed == null || !parsed.ContainsKey("choices")) return null;
                 object choicesObj;
                 if (!parsed.TryGetValue("choices", out choicesObj)) return null;
-                var choices = choicesObj as object[];
-                if (choices == null || choices.Length == 0) return null;
+                // .NET 4.5 的 JavaScriptSerializer 把 JSON 数组反序列化为 ArrayList（不是 object[]），
+                // 这里统一按 IList 取第一个元素，避免“返回结构无法解析”。
+                var list = choicesObj as System.Collections.IList;
+                if (list == null || list.Count == 0) return null;
 
-                var first = choices[0] as Dictionary<string, object>;
+                var first = list[0] as Dictionary<string, object>;
                 if (first == null || !first.ContainsKey("message")) return null;
                 var msg = first["message"] as Dictionary<string, object>;
                 if (msg == null || !msg.ContainsKey("content")) return null;
