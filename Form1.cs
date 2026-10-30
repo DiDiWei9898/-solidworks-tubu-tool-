@@ -195,6 +195,35 @@ namespace WindowsFormsApplication5
             }
         }
 
+        /// <summary>
+        /// 安全连接 SolidWorks 并取当前活动文档。
+        /// 返回 false 时 error 给出原因；连接/取文档异常（如权限不一致）不再静默吞掉，
+        /// 而是给出明确弹窗提示，避免“点了没反应”。
+        /// </summary>
+        private bool TryConnectToSolidWorks(out string error)
+        {
+            error = null;
+            try
+            {
+                if (getProcesson("SLDWORKS") == 0)
+                {
+                    error = "未检测到 SolidWorks 进程。\n请先启动 SolidWorks，打开要审核的工程图，再点击审核按钮。";
+                    return false;
+                }
+                swApp = (SldWorks)Marshal.GetActiveObject("SldWorks.Application");
+                ModleDoc = (ModelDoc2)(dynamic)swApp.ActiveDoc;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                error = "连接 SolidWorks 失败：" + ex.Message
+                    + "\n\n常见原因：\n① SolidWorks 以管理员身份运行、而本工具不是（或反过来），权限不一致会被拒绝连接；\n"
+                    + "② SolidWorks 正在处理其他操作（如打开文件、弹窗），请稍候重试；\n"
+                    + "③ 若本工具是直接双击运行的，请确保它是 32 位版本，并与 SolidWorks 位一致。";
+                return false;
+            }
+        }
+
         private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
         }
@@ -656,7 +685,12 @@ namespace WindowsFormsApplication5
 
         private void buttonCheck_Click(object sender, EventArgs e)
         {
-            open_swfile("", getProcesson("SLDWORKS"), "SldWorks.Application");
+            string connError;
+            if (!TryConnectToSolidWorks(out connError))
+            {
+                MessageBox.Show(connError, "图纸检查", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (swApp == null)
             {
                 MessageBox.Show("未连接 SolidWorks，请先点击「获取solidwork」或「打开SW」。");
@@ -753,7 +787,12 @@ namespace WindowsFormsApplication5
 
         private async void buttonAICheck_Click(object sender, EventArgs e)
         {
-            open_swfile("", getProcesson("SLDWORKS"), "SldWorks.Application");
+            string connError;
+            if (!TryConnectToSolidWorks(out connError))
+            {
+                MessageBox.Show(connError, "AI 图纸审核", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (swApp == null)
             {
                 MessageBox.Show("未连接 SolidWorks，请先点击「获取solidwork」或「打开SW」。");
