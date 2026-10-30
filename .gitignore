@@ -1,0 +1,15 @@
+# 编译产物
+bin/
+obj/
+
+# Visual Studio 用户配置与缓存
+*.user
+*.suo
+.vs/
+
+# AI 审核运行配置与导出图片（含潜在 API Key）
+ai_config.json
+AI_Review/
+
+# 其他
+*.log

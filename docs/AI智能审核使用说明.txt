@@ -1,0 +1,24 @@
+【AI 智能审核 使用说明】（涂布一组工具）
+
+1. 功能说明
+   点击「图纸检查」分组里的「AI 智能审核」按钮：
+   - 程序从当前打开的 SolidWorks 工程图（.slddrw）只读提取结构化信息：图幅、视图、标注与注解（文本/位置/字高）、标题栏属性、规则检查问题清单；
+   - 把上述 JSON 上下文发送给大模型 API，按 GB 国标 + 赢合科技模板规范做全面审核（标注错误 + 格式规范）；
+   - 同时把当前工程图图形区导出为 PNG，保存在本目录 AI_Review 文件夹（供后续 YOLO / 视觉模型接入使用，导出失败不影响审核）；
+   - 审核报告在独立窗口展示（仅供参考，最终以人工复核为准）。
+
+2. 首次使用必须配置 ApiKey
+   本目录 ai_config.json 已生成样例，打开它，把 "ApiKey" 填成你的大模型 API Key：
+   - 默认使用 DeepSeek（https://platform.deepseek.com 注册获取，模型 deepseek-chat，价格便宜，OpenAI 兼容接口）；
+   - 也支持切换任意 OpenAI 兼容端点：改 "BaseUrl" 和 "Model" 即可，例如通义千问（dashscope）、智谱 GLM、火山方舟等；
+   - 配置项说明：
+       BaseUrl       接口地址（不带末尾斜杠）
+       ApiKey        你的 API Key（必填）
+       Model         模型名，如 deepseek-chat / qwen-plus / glm-4-plus
+       TimeoutSeconds 请求超时秒数，默认 120
+       MaxTokens      回复最大 token 数，默认 4000
+
+3. 当前版本边界（MVP）
+   - 审核依据：SolidWorks API 结构化提取的数据 + 内置规则检查结果（不含截图 OCR，因为尚未接入视觉模型）；
+   - YOLO 视觉检测为后续计划：本版本已预留图纸图片导出（AI_Review 目录），待你提供训练好的 YOLO 模型与标注数据集后再接入；
+   - 若未配置 ApiKey，点击按钮会弹出配置提示；配置后即可正常审核。
