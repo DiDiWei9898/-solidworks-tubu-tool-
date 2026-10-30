@@ -65,7 +65,10 @@ MSBuild.exe "涂布二次开发工具.csproj" /t:Build /p:Configuration=Debug /p
 
 ### AI 智能审核配置
 
-首次使用需在程序目录创建 `ai_config.json`：
+**两种方式，推荐界面填写**：
+
+1. **界面填写（推荐）**：程序主界面「AI 审核配置」栏直接填 ApiKey / BaseUrl / Model（文本通道）与视觉Key / 视觉地址 / 视觉模型（视觉通道），点「保存 AI 配置」即可，无需手动编辑文本文件；下次打开自动加载。
+2. 手动编辑程序目录 `ai_config.json`：
 
 ```json
 {

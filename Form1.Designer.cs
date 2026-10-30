@@ -39,6 +39,21 @@
         private System.Windows.Forms.Button buttonCheck;
         private System.Windows.Forms.Button buttonAICheck;
         private System.Windows.Forms.Label lblHintCheck;
+        private System.Windows.Forms.GroupBox gbAIConfig;
+        private System.Windows.Forms.TextBox txtApiKey;
+        private System.Windows.Forms.TextBox txtBaseUrl;
+        private System.Windows.Forms.TextBox txtModel;
+        private System.Windows.Forms.TextBox txtVisionApiKey;
+        private System.Windows.Forms.TextBox txtVisionBaseUrl;
+        private System.Windows.Forms.TextBox txtVisionModel;
+        private System.Windows.Forms.Button btnSaveAIConfig;
+        private System.Windows.Forms.Label lblAIConfigStatus;
+        private System.Windows.Forms.Label lblApiKeyField;
+        private System.Windows.Forms.Label lblBaseUrlField;
+        private System.Windows.Forms.Label lblModelField;
+        private System.Windows.Forms.Label lblVisionApiKeyField;
+        private System.Windows.Forms.Label lblVisionBaseUrlField;
+        private System.Windows.Forms.Label lblVisionModelField;
         private System.Windows.Forms.Label lblDir1;
         private System.Windows.Forms.Label lblDir2;
         private System.Windows.Forms.Label lblPartName;
@@ -89,6 +104,21 @@
             this.buttonCheck = new System.Windows.Forms.Button();
             this.buttonAICheck = new System.Windows.Forms.Button();
             this.lblHintCheck = new System.Windows.Forms.Label();
+            this.gbAIConfig = new System.Windows.Forms.GroupBox();
+            this.txtApiKey = new System.Windows.Forms.TextBox();
+            this.txtBaseUrl = new System.Windows.Forms.TextBox();
+            this.txtModel = new System.Windows.Forms.TextBox();
+            this.txtVisionApiKey = new System.Windows.Forms.TextBox();
+            this.txtVisionBaseUrl = new System.Windows.Forms.TextBox();
+            this.txtVisionModel = new System.Windows.Forms.TextBox();
+            this.btnSaveAIConfig = new System.Windows.Forms.Button();
+            this.lblAIConfigStatus = new System.Windows.Forms.Label();
+            this.lblApiKeyField = new System.Windows.Forms.Label();
+            this.lblBaseUrlField = new System.Windows.Forms.Label();
+            this.lblModelField = new System.Windows.Forms.Label();
+            this.lblVisionApiKeyField = new System.Windows.Forms.Label();
+            this.lblVisionBaseUrlField = new System.Windows.Forms.Label();
+            this.lblVisionModelField = new System.Windows.Forms.Label();
             this.lblDir1 = new System.Windows.Forms.Label();
             this.lblDir2 = new System.Windows.Forms.Label();
             this.lblPartName = new System.Windows.Forms.Label();
@@ -109,6 +139,7 @@
             this.gbPack.SuspendLayout();
             this.gbOther.SuspendLayout();
             this.gbCheck.SuspendLayout();
+            this.gbAIConfig.SuspendLayout();
             base.SuspendLayout();
 
             // ============ 顶部标题栏 ============
@@ -466,6 +497,110 @@
             this.lblHintOther.Size = new System.Drawing.Size(892, 20);
             this.lblHintOther.TabIndex = 3;
 
+            // ============ 分组 9：AI 审核配置（界面填写，无需再改 ai_config.json） ============
+            this.gbAIConfig.BackColor = System.Drawing.Color.White;
+            this.gbAIConfig.Controls.Add(this.txtApiKey);
+            this.gbAIConfig.Controls.Add(this.txtBaseUrl);
+            this.gbAIConfig.Controls.Add(this.txtModel);
+            this.gbAIConfig.Controls.Add(this.txtVisionApiKey);
+            this.gbAIConfig.Controls.Add(this.txtVisionBaseUrl);
+            this.gbAIConfig.Controls.Add(this.txtVisionModel);
+            this.gbAIConfig.Controls.Add(this.btnSaveAIConfig);
+            this.gbAIConfig.Controls.Add(this.lblAIConfigStatus);
+            this.gbAIConfig.Font = new System.Drawing.Font("微软雅黑", 9.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 134);
+            this.gbAIConfig.ForeColor = System.Drawing.Color.FromArgb(43, 58, 85);
+            this.gbAIConfig.Location = new System.Drawing.Point(16, 706);
+            this.gbAIConfig.Name = "gbAIConfig";
+            this.gbAIConfig.Size = new System.Drawing.Size(928, 118);
+            this.gbAIConfig.TabIndex = 9;
+            this.gbAIConfig.TabStop = false;
+            this.gbAIConfig.Text = "AI 审核配置（直接在界面填写，保存后无需再改 ai_config.json）";
+
+            this.StyleFieldLabel(this.lblApiKeyField, "ApiKey");
+            this.lblApiKeyField.Location = new System.Drawing.Point(18, 28);
+            this.lblApiKeyField.Name = "lblApiKeyField";
+            this.lblApiKeyField.Size = new System.Drawing.Size(55, 22);
+            this.lblApiKeyField.TabIndex = 0;
+
+            this.StyleTextBox(this.txtApiKey);
+            this.txtApiKey.Location = new System.Drawing.Point(80, 24);
+            this.txtApiKey.Name = "txtApiKey";
+            this.txtApiKey.Size = new System.Drawing.Size(200, 26);
+            this.txtApiKey.TabIndex = 1;
+
+            this.StyleFieldLabel(this.lblBaseUrlField, "BaseUrl");
+            this.lblBaseUrlField.Location = new System.Drawing.Point(290, 28);
+            this.lblBaseUrlField.Name = "lblBaseUrlField";
+            this.lblBaseUrlField.Size = new System.Drawing.Size(60, 22);
+            this.lblBaseUrlField.TabIndex = 2;
+
+            this.StyleTextBox(this.txtBaseUrl);
+            this.txtBaseUrl.Location = new System.Drawing.Point(356, 24);
+            this.txtBaseUrl.Name = "txtBaseUrl";
+            this.txtBaseUrl.Size = new System.Drawing.Size(270, 26);
+            this.txtBaseUrl.TabIndex = 3;
+
+            this.StyleFieldLabel(this.lblModelField, "Model");
+            this.lblModelField.Location = new System.Drawing.Point(640, 28);
+            this.lblModelField.Name = "lblModelField";
+            this.lblModelField.Size = new System.Drawing.Size(45, 22);
+            this.lblModelField.TabIndex = 4;
+
+            this.StyleTextBox(this.txtModel);
+            this.txtModel.Location = new System.Drawing.Point(692, 24);
+            this.txtModel.Name = "txtModel";
+            this.txtModel.Size = new System.Drawing.Size(218, 26);
+            this.txtModel.TabIndex = 5;
+
+            this.StyleFieldLabel(this.lblVisionApiKeyField, "视觉Key");
+            this.lblVisionApiKeyField.Location = new System.Drawing.Point(18, 62);
+            this.lblVisionApiKeyField.Name = "lblVisionApiKeyField";
+            this.lblVisionApiKeyField.Size = new System.Drawing.Size(55, 22);
+            this.lblVisionApiKeyField.TabIndex = 6;
+
+            this.StyleTextBox(this.txtVisionApiKey);
+            this.txtVisionApiKey.Location = new System.Drawing.Point(80, 58);
+            this.txtVisionApiKey.Name = "txtVisionApiKey";
+            this.txtVisionApiKey.Size = new System.Drawing.Size(200, 26);
+            this.txtVisionApiKey.TabIndex = 7;
+
+            this.StyleFieldLabel(this.lblVisionBaseUrlField, "视觉地址");
+            this.lblVisionBaseUrlField.Location = new System.Drawing.Point(290, 62);
+            this.lblVisionBaseUrlField.Name = "lblVisionBaseUrlField";
+            this.lblVisionBaseUrlField.Size = new System.Drawing.Size(75, 22);
+            this.lblVisionBaseUrlField.TabIndex = 8;
+
+            this.StyleTextBox(this.txtVisionBaseUrl);
+            this.txtVisionBaseUrl.Location = new System.Drawing.Point(372, 58);
+            this.txtVisionBaseUrl.Name = "txtVisionBaseUrl";
+            this.txtVisionBaseUrl.Size = new System.Drawing.Size(270, 26);
+            this.txtVisionBaseUrl.TabIndex = 9;
+
+            this.StyleFieldLabel(this.lblVisionModelField, "视觉模型");
+            this.lblVisionModelField.Location = new System.Drawing.Point(652, 62);
+            this.lblVisionModelField.Name = "lblVisionModelField";
+            this.lblVisionModelField.Size = new System.Drawing.Size(55, 22);
+            this.lblVisionModelField.TabIndex = 10;
+
+            this.StyleTextBox(this.txtVisionModel);
+            this.txtVisionModel.Location = new System.Drawing.Point(714, 58);
+            this.txtVisionModel.Name = "txtVisionModel";
+            this.txtVisionModel.Size = new System.Drawing.Size(196, 26);
+            this.txtVisionModel.TabIndex = 11;
+
+            this.StyleButton(this.btnSaveAIConfig, "保存 AI 配置");
+            this.btnSaveAIConfig.Location = new System.Drawing.Point(18, 84);
+            this.btnSaveAIConfig.Name = "btnSaveAIConfig";
+            this.btnSaveAIConfig.Size = new System.Drawing.Size(150, 28);
+            this.btnSaveAIConfig.TabIndex = 12;
+            this.btnSaveAIConfig.Click += new System.EventHandler(btnSaveAIConfig_Click);
+
+            this.StyleHint(this.lblAIConfigStatus, "打开程序时自动加载 ai_config.json；填写后点「保存 AI 配置」即可生效。");
+            this.lblAIConfigStatus.Location = new System.Drawing.Point(180, 90);
+            this.lblAIConfigStatus.Name = "lblAIConfigStatus";
+            this.lblAIConfigStatus.Size = new System.Drawing.Size(730, 20);
+            this.lblAIConfigStatus.TabIndex = 13;
+
             // ============ 分组 8：图纸检查 ============
             this.gbCheck.BackColor = System.Drawing.Color.White;
             this.gbCheck.Controls.Add(this.buttonAICheck);
@@ -473,7 +608,7 @@
             this.gbCheck.Controls.Add(this.lblHintCheck);
             this.gbCheck.Font = new System.Drawing.Font("微软雅黑", 9.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 134);
             this.gbCheck.ForeColor = System.Drawing.Color.FromArgb(43, 58, 85);
-            this.gbCheck.Location = new System.Drawing.Point(16, 706);
+            this.gbCheck.Location = new System.Drawing.Point(16, 838);
             this.gbCheck.Name = "gbCheck";
             this.gbCheck.Size = new System.Drawing.Size(928, 92);
             this.gbCheck.TabIndex = 8;
@@ -494,7 +629,7 @@
             this.buttonAICheck.TabIndex = 1;
             this.buttonAICheck.Click += new System.EventHandler(buttonAICheck_Click);
 
-            this.StyleHint(this.lblHintCheck, "规则检查：标注/格式/标题栏（按赢合模板）问题，只读不修改图纸；AI 智能审核：把图纸结构化信息发给大模型 API 全面审核，需先在程序目录 ai_config.json 配置 ApiKey。");
+            this.StyleHint(this.lblHintCheck, "规则检查：标注/格式/标题栏（按赢合模板）问题，只读不修改图纸；AI 智能审核：把图纸结构化信息发给大模型 API 全面审核，可在上方「AI 审核配置」栏填写 ApiKey 后使用。");
             this.lblHintCheck.Location = new System.Drawing.Point(18, 68);
             this.lblHintCheck.Name = "lblHintCheck";
             this.lblHintCheck.Size = new System.Drawing.Size(892, 20);
@@ -504,8 +639,9 @@
             base.AutoScaleDimensions = new System.Drawing.SizeF(7f, 13f);
             base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(239, 242, 247);
-            base.ClientSize = new System.Drawing.Size(960, 814);
+            base.ClientSize = new System.Drawing.Size(960, 946);
             base.Controls.Add(this.gbCheck);
+            base.Controls.Add(this.gbAIConfig);
             base.Controls.Add(this.gbOther);
             base.Controls.Add(this.gbPack);
             base.Controls.Add(this.gbDwg);
@@ -531,6 +667,8 @@
             this.gbPack.ResumeLayout(false);
             this.gbOther.ResumeLayout(false);
             this.gbCheck.ResumeLayout(false);
+            this.gbAIConfig.ResumeLayout(false);
+            this.gbAIConfig.PerformLayout();
             base.ResumeLayout(false);
             base.PerformLayout();
         }

@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -65,6 +66,80 @@ namespace WindowsFormsApplication5
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            ReloadAIConfigToUI();
+        }
+
+        // ==================== AI 配置：界面填写（无需再手动改 ai_config.json 文本） ====================
+
+        /// <summary>把 ai_config.json 现有配置加载到界面输入框。</summary>
+        private void ReloadAIConfigToUI()
+        {
+            try
+            {
+                AIConfig cfg = AIConfig.Load();
+                txtApiKey.Text = cfg.ApiKey;
+                txtBaseUrl.Text = cfg.BaseUrl;
+                txtModel.Text = cfg.Model;
+                txtVisionApiKey.Text = cfg.VisionApiKey;
+                txtVisionBaseUrl.Text = cfg.VisionBaseUrl;
+                txtVisionModel.Text = cfg.VisionModel;
+                lblAIConfigStatus.Text = cfg.HasKey
+                    ? "已从 ai_config.json 加载配置（文本通道已配置）。"
+                    : "已加载配置；请在上方填写 ApiKey（文本通道必填），视觉通道可选填视觉Key。";
+            }
+            catch { }
+        }
+
+        /// <summary>以配置文件为基础，用界面输入框里的非空值覆盖，得到本次审核使用的配置。</summary>
+        private AIConfig BuildConfigFromUI()
+        {
+            AIConfig cfg = AIConfig.Load();
+            string v = txtApiKey.Text.Trim();
+            if (v.Length > 0) cfg.ApiKey = v;
+            v = txtBaseUrl.Text.Trim();
+            if (v.Length > 0) cfg.BaseUrl = v;
+            v = txtModel.Text.Trim();
+            if (v.Length > 0) cfg.Model = v;
+            v = txtVisionApiKey.Text.Trim();
+            if (v.Length > 0) cfg.VisionApiKey = v;
+            v = txtVisionBaseUrl.Text.Trim();
+            if (v.Length > 0) cfg.VisionBaseUrl = v;
+            v = txtVisionModel.Text.Trim();
+            if (v.Length > 0) cfg.VisionModel = v;
+            return cfg;
+        }
+
+        /// <summary>把界面上的配置保存到程序目录 ai_config.json，下次打开自动加载。</summary>
+        private void btnSaveAIConfig_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                AIConfig cfg = BuildConfigFromUI();
+                string json = "{\n"
+                    + "  \"BaseUrl\": " + JsonQuote(cfg.BaseUrl) + ",\n"
+                    + "  \"ApiKey\": " + JsonQuote(cfg.ApiKey) + ",\n"
+                    + "  \"Model\": " + JsonQuote(cfg.Model) + ",\n"
+                    + "  \"TimeoutSeconds\": " + cfg.TimeoutSeconds + ",\n"
+                    + "  \"MaxTokens\": " + cfg.MaxTokens + ",\n"
+                    + "  \"VisionBaseUrl\": " + JsonQuote(cfg.VisionBaseUrl) + ",\n"
+                    + "  \"VisionApiKey\": " + JsonQuote(cfg.VisionApiKey) + ",\n"
+                    + "  \"VisionModel\": " + JsonQuote(cfg.VisionModel) + "\n"
+                    + "}";
+                string path = Path.Combine(Application.StartupPath, "ai_config.json");
+                File.WriteAllText(path, json, new UTF8Encoding(false));
+                lblAIConfigStatus.Text = "已保存到 " + path + "（" + DateTime.Now.ToString("HH:mm:ss") + "）。下次打开程序会自动加载。";
+            }
+            catch (Exception ex)
+            {
+                lblAIConfigStatus.Text = "保存失败：" + ex.Message;
+            }
+        }
+
+        /// <summary>JSON 字符串转义。</summary>
+        private static string JsonQuote(string s)
+        {
+            if (s == null) s = "";
+            return "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "\\r").Replace("\n", "\\n") + "\"";
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -684,7 +759,7 @@ namespace WindowsFormsApplication5
                 return;
             }
 
-            AIConfig cfg = AIConfig.Load();
+            AIConfig cfg = BuildConfigFromUI();
             if (!cfg.HasKey)
             {
                 MessageBox.Show(
