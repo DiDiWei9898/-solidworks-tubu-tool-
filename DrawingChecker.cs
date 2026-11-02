@@ -84,6 +84,8 @@ namespace WindowsFormsApplication5
         {
             public string Name;
             public double Width, Height;   // 米
+            /// <summary>右下角标题栏模板文字（拼接该图纸视图的注解文本），用于赢合模板校验。</summary>
+            public string TitleBarText = string.Empty;
         }
 
         /// <summary>内部记录：一个视图。</summary>
@@ -177,6 +179,10 @@ namespace WindowsFormsApplication5
                 List<ViewInfo> viewInfos = new List<ViewInfo>();
                 bool hasBalloon = false;
 
+                // 按图纸名索引 SheetInfo（右下角标题栏模板文字收集用）
+                var sheetByName = new Dictionary<string, SheetInfo>();
+                foreach (var si in sheets) sheetByName[si.Name ?? string.Empty] = si;
+
                 View v = null;
                 try { v = (View)draw.GetFirstView(); } catch { }
                 while (v != null)
@@ -216,6 +222,33 @@ namespace WindowsFormsApplication5
 
                         // 图纸视图（标题栏所在视图，无引用模型）：模板内容不参与检查
                         bool isSheetView = string.IsNullOrEmpty(refModel);
+                        if (isSheetView)
+                        {
+                            // 收集该图纸右下角标题栏的模板文字，供“赢合模板校验”使用
+                            try
+                            {
+                                SheetInfo si;
+                                if (sheetByName.TryGetValue(vSheetName ?? string.Empty, out si))
+                                {
+                                    Annotation ta = null;
+                                    try { ta = v.GetFirstAnnotation3(); } catch { }
+                                    while (ta != null)
+                                    {
+                                        try
+                                        {
+                                            object ts = null;
+                                            try { ts = ta.GetSpecificAnnotation(); } catch { }
+                                            string tt = null;
+                                            if (ts is Note tnote) { try { tt = tnote.GetText(); } catch { } }
+                                            if (!string.IsNullOrEmpty(tt)) si.TitleBarText += tt + " ";
+                                        }
+                                        catch { }
+                                        try { ta = ta.GetNext3(); } catch { break; }
+                                    }
+                                }
+                            }
+                            catch { }
+                        }
                         if (!isSheetView)
                         {
                             Annotation a = null;
@@ -271,6 +304,9 @@ namespace WindowsFormsApplication5
 
                 // ---------- 检查 7：标题栏 ----------
                 CheckTitleBlock(model, viewInfos, issues);
+
+                // ---------- 检查 8：右下角图纸模板（赢合科技） ----------
+                CheckSheetTemplate(sheets, issues);
 
                 // ---------- 检查 8：球标（装配图提示） ----------
                 if (!hasBalloon)
@@ -715,6 +751,32 @@ namespace WindowsFormsApplication5
         }
 
         // ==================== 图纸 / 视图 ====================
+
+        /// <summary>
+        /// 检查右下角图纸模板是否为赢合科技模板：标题栏模板文字中应包含「赢合」或「YHWINS」特征字样。
+        /// 不是赢合模板时按严重度“错误”报错。
+        /// </summary>
+        private static void CheckSheetTemplate(List<SheetInfo> sheets, List<CheckIssue> issues)
+        {
+            if (sheets == null || sheets.Count == 0) return;
+            foreach (var si in sheets)
+            {
+                string t = si.TitleBarText ?? string.Empty;
+                string lower = t.ToLowerInvariant();
+                bool isYhTemplate = t.Contains("赢合") || lower.Contains("yhwins");
+                if (!isYhTemplate)
+                {
+                    issues.Add(new CheckIssue
+                    {
+                        Category = "标题栏",
+                        Severity = "错误",
+                        Sheet = si.Name,
+                        Message = "右下角图纸模板不是赢合科技模板：标题栏未检测到「赢合 / YHWINS」特征文字。" +
+                                  "请使用赢合科技标准图框模板（机加零件图纸专用图框），不要用 SolidWorks 默认图框或第三方图框。"
+                    });
+                }
+            }
+        }
 
         private static void CheckSheets(List<SheetInfo> sheets, List<ViewInfo> viewInfos, List<CheckIssue> issues)
         {
